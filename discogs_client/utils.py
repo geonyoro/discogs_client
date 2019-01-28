@@ -1,6 +1,8 @@
 from __future__ import unicode_literals
 
 from datetime import datetime
+import re
+
 try:
     # python2
     from urllib2 import quote
@@ -13,7 +15,15 @@ except ImportError:
 
 def parse_timestamp(timestamp):
     """Convert an ISO 8601 timestamp into a datetime."""
-    return datetime.strptime(timestamp, '%Y-%m-%dT%H:%M:%S')
+
+    #sometimes it seems discogs does send the TimeZone: ignore it
+    #by removing it
+    ts = timestamp
+    search_obj = re.search("\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}", ts)
+    if search_obj:
+        ts = search_obj.group()
+
+    return datetime.strptime(ts, '%Y-%m-%dT%H:%M:%S')
 
 
 def update_qs(url, params):
